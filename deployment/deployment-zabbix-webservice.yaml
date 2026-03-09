@@ -1,0 +1,59 @@
+---
+# Source: zabbix/templates/deployment-zabbix-webservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-zabbix-webservice
+  namespace: avacameron
+  labels:
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/version: "7.0.16"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: webservice
+  annotations:
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zabbix
+      app.kubernetes.io/instance: zabbix
+      app.kubernetes.io/component: webservice
+  template:
+    metadata:
+      annotations:
+      labels:
+        helm.sh/chart: zabbix-7.0.12
+        app.kubernetes.io/name: zabbix
+        app.kubernetes.io/instance: zabbix
+        app.kubernetes.io/version: "7.0.16"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: webservice
+    spec:
+      serviceAccountName: zabbix
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: zabbix-zabbix-webservice
+      containers:
+      - name: zabbix-webservice
+        resources:
+          {}
+        securityContext:
+          {}
+        image: "zabbix/zabbix-web-service:ubuntu-7.0.16"
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: ZBX_ALLOWEDIP
+            value: "::/0"
+        ports:
+          - name: webservice
+            containerPort: 10053
+            protocol: TCP
+      imagePullSecrets:

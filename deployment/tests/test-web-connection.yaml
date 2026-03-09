@@ -1,0 +1,31 @@
+---
+# Source: zabbix/templates/tests/test-web-connection.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: zabbix-test-web-connection
+  namespace: avacameron
+  labels:
+    app: zabbix-test-web-connection
+    app.kubernetes.io/name: test-web-connection
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/instance: zabbix-test-web-connection
+    app.kubernetes.io/managed-by: Helm-test-web-connection
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": "hook-succeeded,hook-failed"
+spec:
+  template:
+    spec:      
+      containers:
+      - name: test-web-connection
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          {}
+        resources:
+          {}
+        command: ['wget']
+        args: ['http://zabbix-zabbix-web:80']
+      imagePullSecrets:
+      restartPolicy: Never

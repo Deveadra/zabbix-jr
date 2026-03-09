@@ -1,0 +1,106 @@
+---
+# Source: zabbix/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-zabbix-server
+  namespace: avacameron
+  labels:
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/version: "7.0.16"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: server
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - port: 10051
+      name: zabbix-server
+      targetPort: 10051
+      protocol: TCP
+    - port: 10052
+      name: zabbix-jmx
+      targetPort: 10052
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: server
+---
+# Source: zabbix/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-zabbix-web
+  namespace: avacameron
+  labels:
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/version: "7.0.16"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: web
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - port: 80
+      name: zabbix-web
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: web
+---
+# Source: zabbix/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-zabbix-webservice
+  namespace: avacameron
+  labels:
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/version: "7.0.16"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: webservice
+spec:
+  type: ClusterIP
+  ports:
+    - port: 10053
+      name: webservice
+      targetPort: 10053
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: webservice
+---
+# Source: zabbix/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-postgresql
+  namespace: avacameron
+  labels:
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/version: "7.0.16"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: postgresql
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      name: db
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: postgresql
