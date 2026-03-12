@@ -9,6 +9,20 @@ This guide covers only local development steps.
 
 - Helm installed
 - `kubectl` installed and pointed to your local/dev Kubernetes context
+- Namespace in o11n-eks-o11n-dev cluster
+- Authentication to AWS Lab1
+
+---
+
+## Set EKS Cluster Name and Context
+
+```sh
+assume
+export AWS_REGION=us-east-1
+export EKS_CLUSTER=o11n-eks-o11n-dev
+aws eks update-kubeconfig --name "$EKS_CLUSTER" --region "$AWS_REGION"
+kubectl config use-context "arn:aws:eks:$AWS_REGION:845194625280:cluster/$EKS_CLUSTER"
+```
 
 ---
 
@@ -58,4 +72,4 @@ kubectl delete -f deployment
 ## Troubleshooting
 
 - If resources are missing, re-run the render step before `kubectl apply`.
-- If port-forward fails, verify the service exists: `kubectl get svc -n monitoring`.
+- If port-forward fails, verify the service exists: `kubectl get svc -n [namespace]`.
