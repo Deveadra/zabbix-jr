@@ -1,0 +1,8 @@
+include:
+  - project: 'tools/pipeline-templates'
+    ref: master
+    file: 'kubernetes/glue-k8s-deploy/v3/acceptance-union-deliver.yml'
+
+acceptance-deploy:
+  environment:
+    url: https://{CI_COMMIT_REF_SLUG}.acceptance.deployment.jw.org

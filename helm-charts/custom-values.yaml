@@ -1,0 +1,2 @@
+service:
+  type: ClusterIP   # use ClusterIP instead of LoadBalancer (the default)

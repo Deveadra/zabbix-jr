@@ -1,0 +1,75 @@
+---
+# Source: zabbix/templates/statefulset-postgresql.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zabbix-postgresql
+  namespace: avacameron
+  labels:
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/version: "7.0.16"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: postgresql
+  annotations:
+spec:
+  replicas: 1
+  serviceName: zabbix
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zabbix
+      app.kubernetes.io/instance: zabbix
+      app.kubernetes.io/component: postgresql
+  template:
+    metadata:
+      annotations:
+      labels:
+        helm.sh/chart: zabbix-7.0.12
+        app.kubernetes.io/name: zabbix
+        app.kubernetes.io/instance: zabbix
+        app.kubernetes.io/version: "7.0.16"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: postgresql
+    spec:
+      serviceAccountName: zabbix
+      containers:
+        - name: postgresql
+          resources:
+            {}
+          securityContext:
+            {}
+          image: "postgres:16"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "-c"
+            - "max_connections=100"
+          env:
+            
+            
+            - name: DB_SERVER_HOST
+              value: zabbix-postgresql
+            - name: DB_SERVER_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: zabbix-db-access
+                  key: user
+                  optional: true
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zabbix-db-access
+                  key: password
+            - name: POSTGRES_DB
+              value: "zabbix"
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+          ports:
+            - name: db
+              containerPort: 5432
+              protocol: TCP
+      volumes:
+      imagePullSecrets:

@@ -1,0 +1,56 @@
+---
+# Source: zabbix/templates/cronjob-hanodes-autoclean.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: zabbix-nodesclean
+  namespace: avacameron
+  labels:
+    helm.sh/chart: zabbix-7.0.12
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/version: "7.0.16"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  schedule: "0 1 * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          serviceAccountName: zabbix
+          containers:
+          - name: hanodes-autoclean
+            image: "postgres:16"
+            imagePullPolicy: IfNotPresent
+            resources:
+              {}
+            securityContext:
+              {}
+            command:
+            - /bin/bash
+            - -c
+            - echo "deleting all stopped and unavailable HANodes older than 3600 seconds..." && psql -c "delete from ha_node where status in (1,2) and extract(epoch from now())-lastaccess>3600"
+            env:
+            
+            
+            - name: PGHOST
+              value: zabbix-postgresql
+            - name: PGPORT
+              value: "5432"
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: zabbix-db-access
+                  key: user
+                  optional: true
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zabbix-db-access
+                  key: password
+            - name: PGDATABASE
+              value: "zabbix"
+          imagePullSecrets:
+          restartPolicy: OnFailure
