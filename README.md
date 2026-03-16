@@ -1,6 +1,7 @@
 # Zabbix-JR Local Development Guide
 
 ## Overview
+
 This guide covers only local development steps.
 
 ---
@@ -9,8 +10,8 @@ This guide covers only local development steps.
 
 - Helm installed
 - `kubectl` installed and pointed to your local/dev Kubernetes context
-- Namespace in o11n-eks-o11n-dev cluster
-- Authentication to AWS Lab1
+- Namespace in `o11n-eks-o11n-dev` cluster
+- Authentication to AWS Lab-1
 
 ---
 
@@ -59,7 +60,9 @@ kubectl get svc -n [namespace]
 kubectl port-forward service/zabbix-zabbix-web 8888:80 -n [namespace]
 ```
 
-Open: http://localhost:8888
+Open: <http://localhost:8888>
+User: Admin
+Password: zabbix
 
 ### 5) Delete resources
 
