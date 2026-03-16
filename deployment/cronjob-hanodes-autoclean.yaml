@@ -4,7 +4,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: zabbix-nodesclean
-  namespace: avacameron
+  namespace: zabbix-jr
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix

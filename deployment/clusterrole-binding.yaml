@@ -19,4 +19,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: zabbix
-    namespace: avacameron
+    namespace: zabbix-jr
