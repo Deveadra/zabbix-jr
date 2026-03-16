@@ -4,7 +4,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-zabbix-server
-  namespace: avacameron
+  namespace: zabbix-jr
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -34,7 +34,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-zabbix-web
-  namespace: avacameron
+  namespace: zabbix-jr
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -60,7 +60,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-zabbix-webservice
-  namespace: avacameron
+  namespace: zabbix-jr
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -85,7 +85,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-postgresql
-  namespace: avacameron
+  namespace: zabbix-jr
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix

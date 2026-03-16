@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zabbix-zabbix-webservice
-  namespace: avacameron
+  namespace: zabbix-jr
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
