@@ -7,7 +7,7 @@ HELM_CHART_VERSION=7.0.12
 GIT_ROOT="$(git rev-parse --show-toplevel)"
 CHARTS_DIR="$GIT_ROOT/helm-charts/charts"     # Where the chart will be untarred (raw chart files)
 RENDERED_DIR="$GIT_ROOT/helm-charts/rendered" # Where Helm will output rendered Kubernetes manifests
-DESTINATION_DIR="$GIT_ROOT/deployment"  # Where final manifests will be copied for deployment
+DESTINATION_DIR="$GIT_ROOT/deployment/zabbix-jr"  # Where final manifests will be copied for deployment
 
 # Clean up any previous chart, rendered, or destination directories to ensure a fresh start
 rm -rf "$CHARTS_DIR" "$RENDERED_DIR" "$DESTINATION_DIR"

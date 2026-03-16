@@ -1,0 +1,21 @@
+---
+# Source: zabbix/templates/extra-manifests.yaml
+apiVersion: zalando.org/v1
+kind: RouteGroup
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: kube-alb
+  name: zabbix-route-group
+  namespace: 'zabbix-jr'
+spec:
+  backends:
+  - name: zabbix-web
+    serviceName: zabbix-zabbix-web
+    servicePort: 80
+    type: service
+  hosts:
+  - zabbix-jr.o11n-acceptance.jw-cd-cicd-01.10aws.org
+  routes:
+  - backends:
+    - backendName: zabbix-web
+    pathSubtree: /

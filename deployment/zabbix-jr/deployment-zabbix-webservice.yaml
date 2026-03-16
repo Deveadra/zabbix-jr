@@ -47,7 +47,7 @@ spec:
           {}
         securityContext:
           {}
-        image: "zabbix/zabbix-web-service:ubuntu-7.0.16"
+        image: "zabbix/zabbix-web-service:ubuntu-7.4.8"
         imagePullPolicy: IfNotPresent
         env:
           - name: ZBX_ALLOWEDIP
