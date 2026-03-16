@@ -1,2 +1,35 @@
+zabbixImageTag: ubuntu-7.4.8
+
 service:
-  type: ClusterIP   # use ClusterIP instead of LoadBalancer (the default)
+  type: ClusterIP
+zabbixServer:
+  service:
+    type: LoadBalancer
+    externalTrafficPolicy: Cluster
+    port: 443
+    nodePort: ""
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "external"
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+extraManifests:
+  - apiVersion: zalando.org/v1
+    kind: RouteGroup
+    metadata:
+      name: zabbix-route-group
+      namespace: "{{ .Release.Namespace }}"
+      annotations:
+        kubernetes.io/ingress.class: kube-alb
+    spec:
+      hosts:
+        - "zabbix-jr.o11n-acceptance.jw-cd-cicd-01.10aws.org"
+      backends:
+        - name: zabbix-web
+          type: service
+          servicePort: 80
+          serviceName: zabbix-zabbix-web
+      routes:
+        - pathSubtree: /
+          backends:
+            - backendName: zabbix-web

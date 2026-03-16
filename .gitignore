@@ -1,3 +1,4 @@
+#Helm charts
 /helm-charts/charts
 /helm-charts/rendered
 /deployment/tests
