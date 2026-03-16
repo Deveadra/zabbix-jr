@@ -13,13 +13,11 @@ DESTINATION_DIR="$GIT_ROOT/deployment"  # Where final manifests will be copied f
 rm -rf "$CHARTS_DIR" "$RENDERED_DIR" "$DESTINATION_DIR"
 mkdir -p "$CHARTS_DIR" "$RENDERED_DIR" "$DESTINATION_DIR"
 
-# Add the Bitnami Helm repository (safe to run even if already added)
 helm repo add zabbix-community https://zabbix-community.github.io/helm-zabbix
 
 # Update local Helm repo cache to get the latest chart versions
 helm repo update
 
-# Download and untar the specified version of the NGINX chart into the charts directory
 helm pull \
     --untar \
     --untardir "$CHARTS_DIR" \
