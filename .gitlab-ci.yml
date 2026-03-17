@@ -19,7 +19,9 @@ delete-acceptance:
 
 deploy-union:
   variables:
-    DISABLED: "true"
+    AWS: jw-cd-orchestration-prd
+    KAPP_NAMESPACE: zabbix-jr
+    KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-union
 
 deploy-deliver:
   variables:
