@@ -1,0 +1,37 @@
+version: "3.7"
+
+services:
+  glue-k8s-deploy:
+    image: docker.packages.bethel.jw.org/glue-k8s-deploy:latest
+    network_mode: bridge
+    devices:
+      - /dev/fuse:/dev/fuse
+    security_opt:
+      - seccomp=unconfined
+      - apparmor=unconfined
+    volumes:
+      - ./:/src
+    command: glue-k8s-deploy
+    environment:
+      ARTIFACTORY_USERNAME:
+      ARTIFACTORY_ACCESS_TOKEN:
+      AWS_ACCESS_KEY_ID:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY:
+      AWS_SESSION_TOKEN:
+      CI_PROJECT_PATH: ACAMERON/zabbix-jr
+      CI_COMMIT_REF_SLUG: lab1-$USER
+      CI_ENVIRONMENT_SLUG: dev
+      KAPP_NAMESPACE: "$USER"
+      GLUE_CMD: ${GLUE_CMD:-deploy}
+      WORKING_DIR: "/src"
+      DEPLOYMENT_FOLDER: "/src/deployment/"
+      KUBECFG_VAULT_PATH: "secret/systems/eks/o11n-eks-o11n-dev"
+      BUILD_MODE: "none"
+      SKIP_MIRROR_IMAGES: "true"
+      ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
+      HOST_NAME: zabbix-$USER.o11n-dev.jw-cd-lab-1.10aws.org
+      VAULT_ADDR: https://vault.o11n.jw-cd-gitlab.10aws.org
+      VAULT_ROLE:
+      VAULT_TOKEN:
