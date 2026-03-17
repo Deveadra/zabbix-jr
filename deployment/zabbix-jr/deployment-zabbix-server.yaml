@@ -51,7 +51,7 @@ spec:
             {}
           securityContext:
             {}
-          image: "zabbix/zabbix-server-pgsql:ubuntu-7.0.16"
+          image: "zabbix/zabbix-server-pgsql:ubuntu-7.4.8"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 10051
@@ -95,7 +95,7 @@ spec:
             {}
           securityContext:
             {}
-          image: "zabbix/zabbix-agent2:ubuntu-7.0.16"
+          image: "zabbix/zabbix-agent2:ubuntu-7.4.8"
           imagePullPolicy: IfNotPresent
           env:
             - name: ZBX_HOSTNAME

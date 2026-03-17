@@ -4,6 +4,8 @@ include:
     file: kubernetes/glue-k8s-deploy/v3/acceptance-union-deliver.yml
 
 deploy-acceptance:
+  environment:
+    url: https://zabbix-jr.o11n-acceptance.jw-cd-cicd-01.10aws.org/acceptance/${CI_COMMIT_REF_SLUG}/index.html
   variables:
     AWS: jw-cd-cicd-01
     KAPP_NAMESPACE: zabbix-jr
