@@ -1,5 +1,38 @@
 ---
 # Source: zabbix/templates/extra-manifests.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: 'zabbix'
+  namespace: 'zabbix-jr'
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - endpoints
+  - events
+  verbs:
+  - get
+  - list
+---
+# Source: zabbix/templates/extra-manifests.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: 'zabbix'
+  namespace: 'zabbix-jr'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: 'zabbix'
+subjects:
+- kind: ServiceAccount
+  name: 'zabbix'
+  namespace: 'zabbix-jr'
+---
+# Source: zabbix/templates/extra-manifests.yaml
 apiVersion: zalando.org/v1
 kind: RouteGroup
 metadata:
