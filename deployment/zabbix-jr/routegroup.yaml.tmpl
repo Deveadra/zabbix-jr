@@ -13,7 +13,7 @@ spec:
     servicePort: 80
     type: service
   hosts:
-  - '{{ .host_name }}'
+  - {{ .host_name }}
   routes:
   - backends:
     - backendName: zabbix-web
