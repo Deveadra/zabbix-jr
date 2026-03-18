@@ -24,7 +24,6 @@ delete-acceptance:
 
 deploy-union:
   variables:
-    GLUE_CMD: destroy
     AWS: jw-cd-orchestration-prd
     HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-union
