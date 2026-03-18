@@ -8,71 +8,64 @@ This guide covers only local development steps.
 
 ## Prerequisites
 
-- Helm installed
-- `kubectl` installed and pointed to your local/dev Kubernetes context
+- `kubectl` installed
 - Namespace in `o11n-eks-o11n-dev` cluster
-- Authentication to AWS Lab-1
 
 ---
 
-## Set EKS Cluster Name and Context
+## 🛂 Access AWS and o11n-dev cluster
 
-```sh
-assume
-export AWS_REGION=us-east-1
-export EKS_CLUSTER=o11n-eks-o11n-dev
-aws eks update-kubeconfig --name "$EKS_CLUSTER" --region "$AWS_REGION"
-kubectl config use-context "arn:aws:eks:$AWS_REGION:845194625280:cluster/$EKS_CLUSTER"
-```
+1. Get access to `jw-cd-lab-1` AWS account
+   - See: [Access AWS with Granted](https://techdocs.bethelservice.org/how-to/access-aws-granted/)
+1. Get `o11n-dev` cluster KubeConfig from Vault
 
----
+   - Export the Vault address.
 
-## Local Development Steps
+     ```bash
+     export VAULT_ADDR="https://vault.o11n.jw-cd-gitlab.10aws.org"
+     ```
 
-### 1) Render manifests
+   - Login to Vault.
 
-```sh
-chmod +x helm-charts/render.sh
-helm-charts/render.sh
-```
+     ```bash
+     vault login -method=oidc skip_browser=true
+     ```
 
-Expected result:
+     > ℹ️ Open link in a browser to authenticate with second account.
 
-- Rendered manifests are generated in `helm-charts/rendered/zabbix/templates/`
-- Deployable manifests are copied to `deployment/`
+   - Export the Vault token.
 
-### 2) Apply resources
+     ```bash
+     export VAULT_TOKEN=$(cat ~/.vault-token)
+     ```
 
-```sh
-kubectl apply -f deployment
-```
+     > ❗️ You will need to authenticate again after around 15 minutes.
+     Make sure you're using your second account.
 
-### 3) Verify workload
+## 🚀 Deploy Zabbix Jr
 
-```sh
-kubectl get pods -n [namespace]
-kubectl get svc -n [namespace]
-```
+1. Deploy kubernetes deployment files coming from [deployment/zabbix-jr](https://git.bethelservice.org/ACAMERON/zabbix-jr/-/tree/main/deployment/zabbix-jr?ref_type=heads)
 
-### 4) Port-forward Zabbix web service
+   ```bash
+   docker compose -f docker-compose-gkd.yaml up
+   ```
 
-```sh
-kubectl port-forward service/zabbix-zabbix-web 8888:80 -n [namespace]
-```
+   > ℹ️ To create the deployment file without deploying it, run
+   `GLUE_CMD=template docker compose -f docker-compose-gkd.yaml up`
+1. Retrieve the `HOST_NAME` URL from `docker-compose-gkd.yaml`
+and open the URL in the browser. The Zabbix Login
+interface should appear.
 
-Open: <http://localhost:8888>
-User: Admin
-Password: zabbix
+    **Default Credentials**:
+    - Username: Admin
+    - Password: zabbix
 
-### 5) Delete resources
+## 🧹 Clean up deployment
 
-```sh
-kubectl delete -f deployment
-```
+1. Destroy k8s manifests:
 
----
+   ```bash
+   GLUE_CMD=delete docker compose -f docker-compose-gkd.yaml up
+   ```
 
-## Troubleshooting
-
-- If resources are missing, re-run the render step before `kubectl apply`.
-- If port-forward fails, verify the service exists: `kubectl get svc -n [namespace]`.
+   > ℹ️ Make sure to do this before redeploying.
