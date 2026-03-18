@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zabbix-zabbix-webservice
-  namespace: zabbix-jr
+  namespace: {{ .kapp_namespace }}
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -47,7 +47,7 @@ spec:
           {}
         securityContext:
           {}
-        image: "zabbix/zabbix-web-service:ubuntu-7.4.8"
+        image: "zabbix/zabbix-web-service:{{ .zabbix_image_tag }}"
         imagePullPolicy: IfNotPresent
         env:
           - name: ZBX_ALLOWEDIP

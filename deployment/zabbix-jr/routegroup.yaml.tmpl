@@ -1,0 +1,20 @@
+---
+apiVersion: zalando.org/v1
+kind: RouteGroup
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: kube-alb
+  name: zabbix-route-group
+  namespace: {{ .kapp_namespace }}
+spec:
+  backends:
+  - name: zabbix-web
+    serviceName: zabbix-zabbix-web
+    servicePort: 80
+    type: service
+  hosts:
+  - '{{ .host_name }}'
+  routes:
+  - backends:
+    - backendName: zabbix-web
+    pathSubtree: /

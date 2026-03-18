@@ -3,24 +3,29 @@ include:
     ref: master
     file: kubernetes/glue-k8s-deploy/v3/acceptance-union-deliver.yml
 
+.deploy-defaults:
+  variables:
+    KAPP_NAMESPACE: zabbix-jr
+    ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
+
 deploy-acceptance:
   environment:
-    url: https://zabbix-jr.o11n-acceptance.jw-cd-cicd-01.10aws.org/acceptance/${CI_COMMIT_REF_SLUG}/index.html
+    name: acceptance/${CI_COMMIT_REF_SLUG}
+    url: https://zabbix-jr-${CI_MERGE_REQUEST_IID}.o11n-acceptance.jw-cd-cicd-01.10aws.org
   variables:
     AWS: jw-cd-cicd-01
-    KAPP_NAMESPACE: zabbix-jr
+    HOST_NAME: zabbix-jr-${CI_MERGE_REQUEST_IID}.o11n-acceptance.jw-cd-cicd-01.10aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-acceptance
 
 delete-acceptance:
   variables:
     AWS: jw-cd-cicd-01
-    KAPP_NAMESPACE: zabbix-jr
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-acceptance
 
 deploy-union:
   variables:
     AWS: jw-cd-orchestration-prd
-    KAPP_NAMESPACE: zabbix-jr
+    HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-union
 
 deploy-deliver:

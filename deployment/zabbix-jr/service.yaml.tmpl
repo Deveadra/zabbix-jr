@@ -4,7 +4,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-zabbix-server
-  namespace: zabbix-jr
+  namespace: {{ .kapp_namespace }}
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -40,7 +40,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-zabbix-web
-  namespace: zabbix-jr
+  namespace: {{ .kapp_namespace }}
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -66,7 +66,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-zabbix-webservice
-  namespace: zabbix-jr
+  namespace: {{ .kapp_namespace }}
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -91,7 +91,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zabbix-postgresql
-  namespace: zabbix-jr
+  namespace: {{ .kapp_namespace }}
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix

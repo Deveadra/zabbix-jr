@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zabbix-zabbix-server
-  namespace: zabbix-jr
+  namespace: {{ .kapp_namespace }}
   labels:
     helm.sh/chart: zabbix-7.0.12
     app.kubernetes.io/name: zabbix
@@ -51,7 +51,7 @@ spec:
             {}
           securityContext:
             {}
-          image: "zabbix/zabbix-server-pgsql:ubuntu-7.4.8"
+          image: "zabbix/zabbix-server-pgsql:{{ .zabbix_image_tag }}"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 10051
@@ -95,7 +95,7 @@ spec:
             {}
           securityContext:
             {}
-          image: "zabbix/zabbix-agent2:ubuntu-7.4.8"
+          image: "zabbix/zabbix-agent2:{{ .zabbix_image_tag }}"
           imagePullPolicy: IfNotPresent
           env:
             - name: ZBX_HOSTNAME
