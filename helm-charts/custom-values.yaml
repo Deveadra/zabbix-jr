@@ -26,7 +26,7 @@ extraManifests:
         kubernetes.io/ingress.class: kube-alb
     spec:
       hosts:
-        - "zabbix-jr.o11n-acceptance.jw-cd-cicd-01.10aws.org"
+        - "zabbix-jr.o11n-union.jw-cd-orchestration-prd.aws.org"
       backends:
         - name: zabbix-web
           type: service
