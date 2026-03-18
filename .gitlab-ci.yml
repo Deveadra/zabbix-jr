@@ -25,7 +25,7 @@ delete-acceptance:
 deploy-union:
   variables:
     AWS: jw-cd-orchestration-prd
-    HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.aws.org
+    HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.10aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-union
 
 deploy-deliver:
