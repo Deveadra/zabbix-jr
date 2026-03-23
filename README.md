@@ -41,6 +41,13 @@ This guide covers only local development steps.
 
      > ❗️ You will need to authenticate again after around 15 minutes.
      Make sure you're using your second account.
+1. Update your local *kubeconfig* for the `o11n-dev` cluster:
+
+   ```bash
+   aws eks update-kubeconfig --region us-east-1 --name o11n-eks-o11n-dev
+   ```
+
+   This command will allow you to use `kubectl` and `k9s` to view resources in the cluster.
 
 ## 🚀 Deploy Zabbix Jr
 

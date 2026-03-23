@@ -67,9 +67,20 @@ spec:
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
           ports:
             - name: db
               containerPort: 5432
               protocol: TCP
       volumes:
       imagePullSecrets:
+  volumeClaimTemplates:
+    - metadata:
+        name: postgresql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: gp3-wait-retain-xfs-encrypted
+        resources:
+          requests:
+            storage: 20Gi
