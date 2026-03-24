@@ -7,6 +7,7 @@ include:
   variables:
     KAPP_NAMESPACE: zabbix-jr
     ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
+    STORAGE_CLASS: "gp3-wait-retain-xfs-encrypted"
 
 deploy-acceptance:
   environment:
@@ -14,8 +15,10 @@ deploy-acceptance:
     url: https://zabbix-jr-${CI_MERGE_REQUEST_IID}.o11n-acceptance.jw-cd-cicd-01.10aws.org
   variables:
     AWS: jw-cd-cicd-01
+    CI_ENVIRONMENT_SLUG: acceptance
     HOST_NAME: zabbix-jr-${CI_MERGE_REQUEST_IID}.o11n-acceptance.jw-cd-cicd-01.10aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-acceptance
+    STORAGE_CLASS: "gp3-wait-delete-xfs-encrypted"
 
 delete-acceptance:
   variables:
@@ -25,10 +28,12 @@ delete-acceptance:
 deploy-union:
   variables:
     AWS: jw-cd-orchestration-prd
+    CI_ENVIRONMENT_SLUG: union
     HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.10aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-union
 
 deploy-deliver:
   variables:
+    CI_ENVIRONMENT_SLUG: deliver
     DISABLED: "true"
 
