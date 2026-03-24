@@ -2,7 +2,10 @@ version: "3.7"
 
 services:
   glue-k8s-deploy:
-    image: docker.packages.bethel.jw.org/glue-k8s-deploy:latest
+    image: docker.packages.bethelservice.org/glue-k8s-deploy:compat
+    platform: linux/amd64
+    user: root
+    privileged: true
     network_mode: bridge
     devices:
       - /dev/fuse:/dev/fuse
@@ -30,6 +33,7 @@ services:
       KUBECFG_VAULT_PATH: "secret/systems/eks/o11n-eks-o11n-dev"
       BUILD_MODE: "none"
       SKIP_MIRROR_IMAGES: "true"
+      STORAGE_CLASS: "gp3-wait-delete-xfs-encrypted"
       ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
       HOST_NAME: zabbix-$USER.o11n-dev.jw-cd-lab-1.10aws.org
       VAULT_ADDR: https://vault.o11n.jw-cd-gitlab.10aws.org

@@ -16,6 +16,9 @@ metadata:
 spec:
   replicas: 1
   serviceName: zabbix
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: {{ if or (eq .ci_environment_slug "union") (eq .ci_environment_slug "deliver") }}Retain{{ else }}Delete{{ end }}
+    whenScaled: Retain
   selector:
     matchLabels:
       app.kubernetes.io/name: zabbix
@@ -80,7 +83,7 @@ spec:
         name: postgresql-data
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: gp3-wait-retain-xfs-encrypted
+        storageClassName: {{ .storage_class }}
         resources:
           requests:
             storage: 20Gi
