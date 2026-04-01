@@ -27,6 +27,7 @@ delete-acceptance:
 
 deploy-union:
   variables:
+    GLUE_CMD: destroy
     AWS: jw-cd-orchestration-prd
     CI_ENVIRONMENT_SLUG: union
     HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.10aws.org
@@ -36,4 +37,3 @@ deploy-deliver:
   variables:
     CI_ENVIRONMENT_SLUG: deliver
     DISABLED: "true"
-
