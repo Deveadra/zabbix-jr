@@ -23,7 +23,7 @@ services:
       AWS_REGION: us-east-1
       AWS_SECRET_ACCESS_KEY:
       AWS_SESSION_TOKEN:
-      CI_PROJECT_PATH: ACAMERON/zabbix-jr
+      CI_PROJECT_PATH: zabbix/zabbix-jr
       CI_COMMIT_REF_SLUG: lab1-$USER
       CI_ENVIRONMENT_SLUG: dev
       KAPP_NAMESPACE: "$USER"
