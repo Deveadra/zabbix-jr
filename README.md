@@ -51,7 +51,7 @@ This guide covers only local development steps.
 
 ## 🚀 Deploy Zabbix Jr
 
-1. Deploy kubernetes deployment files coming from [deployment/zabbix-jr](https://git.bethelservice.org/ACAMERON/zabbix-jr/-/tree/main/deployment/zabbix-jr?ref_type=heads)
+1. Deploy kubernetes deployment files coming from [deployment/zabbix-jr](<https://git.bethelservice.org/zabbix/zabbix-jr/-/tree/main/deployment?ref_type=heads>)
 
    ```bash
    docker compose -f docker-compose-gkd.yaml up
