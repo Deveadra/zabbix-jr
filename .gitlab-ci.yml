@@ -8,6 +8,9 @@ include:
     KAPP_NAMESPACE: zabbix-jr
     ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
     STORAGE_CLASS: "gp3-wait-retain-xfs-encrypted"
+    SAML_IDP_CRT_B64: ""
+    SAML_SP_CRT_B64: ""
+    SAML_SP_KEY_B64: ""
 
 deploy-acceptance:
   environment:
@@ -36,4 +39,3 @@ deploy-deliver:
   variables:
     CI_ENVIRONMENT_SLUG: deliver
     DISABLED: "true"
-

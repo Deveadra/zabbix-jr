@@ -74,6 +74,23 @@ spec:
             containerPort: 8080
             protocol: TCP
         volumeMounts:
+          - name: saml-certs
+            mountPath: /usr/share/zabbix/conf/certs/idp.crt
+            subPath: idp.crt
+            readOnly: true
+
+          - name: saml-certs
+            mountPath: /usr/share/zabbix/conf/certs/sp.crt
+            subPath: sp.crt
+            readOnly: true
+          - name: saml-certs
+            mountPath: /usr/share/zabbix/conf/certs/sp.key
+            subPath: sp.key
+            readOnly: true
+          - name: zabbix-web-saml-conf
+            mountPath: /etc/zabbix/web/conf.d/50-saml.php
+            subPath: 50-saml.php
+            readOnly: true
         livenessProbe:
           failureThreshold: 6
           httpGet:
@@ -96,3 +113,10 @@ spec:
           timeoutSeconds: 5
       imagePullSecrets:
       volumes:
+        - name: saml-certs
+          secret:
+            secretName: zabbix-saml-certs
+            defaultMode: 0400
+        - name: zabbix-web-saml-conf
+          configMap:
+            name: zabbix-web-saml-conf
