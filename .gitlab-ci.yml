@@ -7,6 +7,7 @@ include:
   variables:
     KAPP_NAMESPACE: zabbix-jr
     ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
+    ZABBIX_SERVER_DEBUGLEVEL: "5"
     STORAGE_CLASS: "gp3-wait-retain-xfs-encrypted"
     SAML_IDP_CRT_B64: ""
     SAML_SP_CRT_B64: ""

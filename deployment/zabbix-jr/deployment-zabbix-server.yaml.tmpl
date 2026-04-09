@@ -86,6 +86,8 @@ spec:
               value: "http://zabbix-zabbix-webservice:10053/report"
             - name: ZBX_STARTREPORTWRITERS
               value: "1"
+            - name: ZBX_DEBUGLEVEL
+              value: "{{ .zabbix_server_debuglevel }}"
             - name: ZBX_JAVAGATEWAY_ENABLE
               value: "false"
             - name: ZBX_WEBDRIVERURL
