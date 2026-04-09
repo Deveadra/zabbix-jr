@@ -9,9 +9,8 @@ include:
     ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
     ZABBIX_SERVER_DEBUGLEVEL: "5"
     STORAGE_CLASS: "gp3-wait-retain-xfs-encrypted"
-    SAML_IDP_CRT_B64: ""
-    SAML_SP_CRT_B64: ""
-    SAML_SP_KEY_B64: ""
+    SP_CRT: ""
+    SP_KEY: ""
 
 deploy-acceptance:
   environment:
@@ -28,6 +27,7 @@ delete-acceptance:
   variables:
     AWS: jw-cd-cicd-01
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-acceptance
+    CUSTOM_VAULT_PATHS: kv2/appsvc/azure-ad/apps/jw-cd-azure/zabbix/zabbix_jr-acceptance
 
 deploy-union:
   variables:
