@@ -35,6 +35,7 @@ deploy-union:
     CI_ENVIRONMENT_SLUG: union
     HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.10aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-union
+    CUSTOM_VAULT_PATH: kv2/appsvc/azure-ad/apps/jw-cd-azure/zabbix/zabbix_jr-union
 
 deploy-deliver:
   variables:
