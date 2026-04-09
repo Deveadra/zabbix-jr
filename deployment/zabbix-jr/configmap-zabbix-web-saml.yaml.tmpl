@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zabbix-web-saml-conf
+  namespace: {{ .kapp_namespace }}
+  labels:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: web
+data:
+  50-saml.php: |
+    <?php
+    $SSO['IDP_CERT'] = 'conf/certs/idp.crt';
+    $SSO['SP_CERT'] = 'conf/certs/sp.crt';
+    $SSO['SP_KEY'] = 'conf/certs/sp.key';
+    $SSO['SETTINGS'] = [
+        'use_proxy_headers' => true,
+        'security' => [
+            'requestedAuthnContext' => false
+        ]
+    ];
