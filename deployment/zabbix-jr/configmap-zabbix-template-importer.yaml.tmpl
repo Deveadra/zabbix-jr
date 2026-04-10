@@ -1,0 +1,236 @@
+# ConfigMap that contains a Go script that will be used by Zabbix Jr to import a template into Zabbix and link it to an on-prem host if specified.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zabbix-template-importer
+  namespace: {{ .kapp_namespace }}
+  labels:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: server
+data:
+  main.go: |
+    package main
+
+    import (
+    	"bytes"
+    	"encoding/json"
+    	"fmt"
+    	"io"
+    	"log"
+    	"net/http"
+    	"os"
+    	"path/filepath"
+    	"sort"
+    	"strings"
+    	"time"
+    )
+
+    const (
+    	templateName = "Zabbix Server Health Metrics"
+    	hostGroup    = "Zabbix servers"
+    )
+
+    type rpcRequest struct {
+    	JSONRPC string `json:"jsonrpc"`
+    	Method  string `json:"method"`
+    	Params  any    `json:"params"`
+    	ID      int    `json:"id"`
+    }
+
+    type rpcResponse struct {
+    	Result json.RawMessage `json:"result"`
+    	Error  *rpcError       `json:"error"`
+    }
+
+    type rpcError struct {
+    	Code    int    `json:"code"`
+    	Message string `json:"message"`
+    	Data    string `json:"data"`
+    }
+
+    var (
+    	zbxURL string
+    	client = &http.Client{Timeout: 30 * time.Second}
+    )
+
+    func zbxCall(method string, params any, token string) (json.RawMessage, error) {
+    	body, err := json.Marshal(rpcRequest{JSONRPC: "2.0", Method: method, Params: params, ID: 1})
+    	if err != nil {
+    		return nil, err
+    	}
+    	req, err := http.NewRequest(http.MethodPost, zbxURL, bytes.NewReader(body))
+    	if err != nil {
+    		return nil, err
+    	}
+    	req.Header.Set("Content-Type", "application/json")
+    	if token != "" {
+    		req.Header.Set("Authorization", "Bearer "+token)
+    	}
+    	resp, err := client.Do(req)
+    	if err != nil {
+    		return nil, err
+    	}
+    	defer resp.Body.Close()
+    	data, err := io.ReadAll(resp.Body)
+    	if err != nil {
+    		return nil, err
+    	}
+    	var rpc rpcResponse
+    	if err := json.Unmarshal(data, &rpc); err != nil {
+    		return nil, err
+    	}
+    	if rpc.Error != nil {
+    		return nil, fmt.Errorf("API error %d: %s: %s", rpc.Error.Code, rpc.Error.Message, rpc.Error.Data)
+    	}
+    	return rpc.Result, nil
+    }
+
+    func mustEnv(key string) string {
+    	v := os.Getenv(key)
+    	if v == "" {
+    		log.Fatalf("ERROR: required environment variable %s is not set", key)
+    	}
+    	return v
+    }
+
+    func main() {
+    	zbxURL = mustEnv("ZABBIX_URL")
+    	user := mustEnv("ZABBIX_API_USER")
+    	password := mustEnv("ZABBIX_API_PASSWORD")
+
+    	loginResult, err := zbxCall("user.login", map[string]string{"username": user, "password": password}, "")
+    	if err != nil {
+    		log.Fatalf("ERROR: Failed to login to Zabbix API at %s: %v", zbxURL, err)
+    	}
+    	var token string
+    	if err := json.Unmarshal(loginResult, &token); err != nil {
+    		log.Fatalf("ERROR: Failed to parse login token: %v", err)
+    	}
+    	defer func() {
+    		if _, err := zbxCall("user.logout", []any{}, token); err != nil {
+    			log.Printf("WARN: logout failed: %v", err)
+    		}
+    	}()
+
+    	matches, err := filepath.Glob("/templates/*.yaml")
+    	if err != nil || len(matches) == 0 {
+    		log.Fatal("ERROR: No templates found in /templates/")
+    	}
+    	sort.Strings(matches)
+
+    	for _, path := range matches {
+    		source, err := os.ReadFile(path)
+    		if err != nil {
+    			log.Fatalf("ERROR: Failed to read %s: %v", path, err)
+    		}
+    		_, err = zbxCall("configuration.import", map[string]any{
+    			"format": "yaml",
+    			"rules": map[string]any{
+    				"template_groups": map[string]bool{"createMissing": true, "updateExisting": false},
+    				"templates":       map[string]bool{"createMissing": true, "updateExisting": true},
+    				"items":           map[string]bool{"createMissing": true, "updateExisting": true},
+    				"triggers":        map[string]bool{"createMissing": true, "updateExisting": true},
+    				"graphs":          map[string]bool{"createMissing": true, "updateExisting": true},
+    				"valueMaps":       map[string]bool{"createMissing": true, "updateExisting": true},
+    			},
+    			"source": string(source),
+    		}, token)
+    		if err != nil {
+    			log.Fatalf("ERROR: Failed to import %s: %v", path, err)
+    		}
+    		fmt.Printf("OK: Imported %s\n", path)
+    	}
+
+        onpremHost := strings.TrimSpace(os.Getenv("ONPREM_ZABBIX_HOST"))
+        if onpremHost == "" {
+            fmt.Println("INFO: ONPREM_ZABBIX_HOST not set, skipping host management")
+        } else {
+            tplResult, err := zbxCall("template.get", map[string]any{
+                "filter": map[string]any{"host": []string{templateName}},
+                "output": []string{"templateid"},
+            }, token)
+            if err != nil {
+                log.Fatalf("ERROR: template.get failed: %v", err)
+            }
+            var tpls []struct{ Templateid string `json:"templateid"` }
+            if err := json.Unmarshal(tplResult, &tpls); err != nil || len(tpls) == 0 {
+                log.Fatalf("ERROR: Template '%s' not found after import", templateName)
+            }
+
+            grpResult, err := zbxCall("hostgroup.get", map[string]any{
+                "filter": map[string]any{"name": []string{hostGroup}},
+                "output": []string{"groupid"},
+            }, token)
+            if err != nil {
+                log.Fatalf("ERROR: hostgroup.get failed: %v", err)
+            }
+            var grps []struct{ Groupid string `json:"groupid"` }
+            if err := json.Unmarshal(grpResult, &grps); err != nil || len(grps) == 0 {
+                log.Fatalf("ERROR: Host group '%s' not found", hostGroup)
+            }
+
+            hostResult, err := zbxCall("host.get", map[string]any{
+                "filter":                map[string]any{"host": []string{onpremHost}},
+                "output":                []string{"hostid"},
+                "selectParentTemplates": []string{"templateid"},
+            }, token)
+            if err != nil {
+                log.Fatalf("ERROR: host.get failed: %v", err)
+            }
+            var hosts []struct {
+                Hostid          string `json:"hostid"`
+                ParentTemplates []struct{ Templateid string `json:"templateid"` } `json:"parentTemplates"`
+            }
+            if err := json.Unmarshal(hostResult, &hosts); err != nil {
+                log.Fatalf("ERROR: Failed to parse host.get response: %v", err)
+            }
+
+            if len(hosts) == 0 {
+                if _, err := zbxCall("host.create", map[string]any{
+                    "host": onpremHost,
+                    "groups": []map[string]string{
+                        {"groupid": grps[0].Groupid},
+                    },
+                    "templates": []map[string]string{
+                        {"templateid": tpls[0].Templateid},
+                    },
+                    "interfaces": []map[string]any{
+                        {
+                            "type": 1, "main": 1, "useip": 1,
+                            "ip": "0.0.0.0", "dns": "", "port": "10050",
+                        },
+                    },
+                }, token); err != nil {
+                    log.Fatalf("ERROR: host.create failed: %v", err)
+                }
+                fmt.Printf("OK: Created host '%s' linked to '%s'\n", onpremHost, templateName)
+            } else {
+                linked := false
+                for _, t := range hosts[0].ParentTemplates {
+                    if t.Templateid == tpls[0].Templateid {
+                        linked = true
+                        break
+                    }
+                }
+                if !linked {
+                    allTpls := make([]map[string]string, 0, len(hosts[0].ParentTemplates)+1)
+                    for _, t := range hosts[0].ParentTemplates {
+                        allTpls = append(allTpls, map[string]string{"templateid": t.Templateid})
+                    }
+                    allTpls = append(allTpls, map[string]string{"templateid": tpls[0].Templateid})
+                    if _, err := zbxCall("host.update", map[string]any{
+                        "hostid":    hosts[0].Hostid,
+                        "templates": allTpls,
+                    }, token); err != nil {
+                        log.Fatalf("ERROR: host.update failed: %v", err)
+                    }
+                    fmt.Printf("OK: Linked '%s' to existing host '%s'\n", templateName, onpremHost)
+                } else {
+                    fmt.Printf("OK: Host '%s' already linked to '%s'\n", onpremHost, templateName)
+                }
+            }
+        }
+
+    	fmt.Println("Done.")
+    }

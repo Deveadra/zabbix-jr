@@ -1,0 +1,69 @@
+# Job that runs the Go script contained in a ConfigMap to import a template into Zabbix Jr
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: zabbix-template-import
+  namespace: {{ .kapp_namespace }}
+  labels:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: server
+  annotations:
+    kapp.k14s.io/update-strategy: fallback-on-replace
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: zabbix
+      restartPolicy: OnFailure
+      volumes:
+        - name: templates
+          configMap:
+            name: zabbix-onprem-template
+        - name: scripts
+          configMap:
+            name: zabbix-template-importer
+            defaultMode: 0755
+      initContainers:
+        - name: wait-for-web
+          image: "busybox:1.36"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until wget -qO- \
+                --post-data '{"jsonrpc":"2.0","method":"apiinfo.version","id":1}' \
+                --header 'Content-Type: application/json' \
+                http://zabbix-zabbix-web.{{ .kapp_namespace }}.svc.cluster.local/api_jsonrpc.php \
+                2>/dev/null | grep -q jsonrpc; do
+                echo "Waiting for Zabbix web API..."; sleep 10;
+              done
+      containers:
+        - name: importer
+          image: "golang:1.22-alpine"
+          imagePullPolicy: IfNotPresent
+          command:
+            - go
+            - run
+            - /scripts/main.go
+          volumeMounts:
+            - name: templates
+              mountPath: /templates
+            - name: scripts
+              mountPath: /scripts
+          env:
+            - name: ZABBIX_URL
+              value: "http://zabbix-zabbix-web.{{ .kapp_namespace }}.svc.cluster.local/api_jsonrpc.php"
+            - name: ZABBIX_API_USER
+              valueFrom:
+                secretKeyRef:
+                  name: zabbix-api-creds
+                  key: username
+            - name: ZABBIX_API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zabbix-api-creds
+                  key: password
+            - name: ONPREM_ZABBIX_HOST
+              value: "{{ .onprem_zabbix_host }}"

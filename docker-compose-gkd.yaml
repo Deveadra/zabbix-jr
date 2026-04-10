@@ -35,8 +35,12 @@ services:
       SKIP_MIRROR_IMAGES: "true"
       STORAGE_CLASS: "gp3-wait-delete-xfs-encrypted"
       ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
-      SAML_SP_CRT_B64:
-      SAML_SP_KEY_B64:
+      ZABBIX_SERVER_DEBUGLEVEL: "3"
+      SAML_SP_CRT_B64: ""
+      SAML_SP_KEY_B64: ""
+      SP_CRT: ""
+      SP_KEY: ""
+      ONPREM_ZABBIX_HOST: ${ONPREM_ZABBIX_HOST:-}
       HOST_NAME: zabbix-$USER.o11n-dev.jw-cd-lab-1.10aws.org
       VAULT_ADDR: https://vault.o11n.jw-cd-gitlab.10aws.org
       VAULT_ROLE:

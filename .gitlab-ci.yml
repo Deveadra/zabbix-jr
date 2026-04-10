@@ -11,6 +11,7 @@ include:
     STORAGE_CLASS: "gp3-wait-retain-xfs-encrypted"
     SAML_SP_CRT_B64: ""
     SAML_SP_KEY_B64: ""
+    ONPREM_ZABBIX_HOST: "nlmgmt032.bethel.jw.org"
 
 deploy-acceptance:
   environment:
