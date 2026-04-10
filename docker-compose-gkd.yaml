@@ -35,7 +35,6 @@ services:
       SKIP_MIRROR_IMAGES: "true"
       STORAGE_CLASS: "gp3-wait-delete-xfs-encrypted"
       ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
-      SAML_IDP_CRT_B64:
       SAML_SP_CRT_B64:
       SAML_SP_KEY_B64:
       HOST_NAME: zabbix-$USER.o11n-dev.jw-cd-lab-1.10aws.org
