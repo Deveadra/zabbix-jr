@@ -9,8 +9,8 @@ include:
     ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
     ZABBIX_SERVER_DEBUGLEVEL: "5"
     STORAGE_CLASS: "gp3-wait-retain-xfs-encrypted"
-    SP_CRT: ""
-    SP_KEY: ""
+    SAML_SP_CRT_B64: ""
+    SAML_SP_KEY_B64: ""
 
 deploy-acceptance:
   environment:
