@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   glue-k8s-deploy:
     image: docker.packages.bethelservice.org/glue-k8s-deploy:compat
@@ -31,15 +29,14 @@ services:
       WORKING_DIR: "/src"
       DEPLOYMENT_FOLDER: "/src/deployment/"
       KUBECFG_VAULT_PATH: "secret/systems/eks/o11n-eks-o11n-dev"
+      CUSTOM_VAULT_PATHS: kv2/data/appsvc/azure-ad/apps/jw-cd-azure/${CI_PROJECT_PATH}-union
+      SAML_SP_CRT_B64:
+      SAML_SP_KEY_B64:
       BUILD_MODE: "none"
       SKIP_MIRROR_IMAGES: "true"
       STORAGE_CLASS: "gp3-wait-delete-xfs-encrypted"
       ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
-      ZABBIX_SERVER_DEBUGLEVEL: "3"
-      SAML_SP_CRT_B64: ""
-      SAML_SP_KEY_B64: ""
-      SP_CRT: ""
-      SP_KEY: ""
+      ZABBIX_SERVER_DEBUGLEVEL: "5"
       ONPREM_ZABBIX_HOST: ${ONPREM_ZABBIX_HOST:-}
       HOST_NAME: zabbix-$USER.o11n-dev.jw-cd-lab-1.10aws.org
       VAULT_ADDR: https://vault.o11n.jw-cd-gitlab.10aws.org
