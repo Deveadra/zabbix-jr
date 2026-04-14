@@ -1,0 +1,154 @@
+# ConfigMap containing a Zabbix template that will be used by Zabbix Jr to monitor the health of the on-prem Zabbix server.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zabbix-onprem-template
+  namespace: {{ .kapp_namespace }}
+  labels:
+    app.kubernetes.io/name: zabbix
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/component: server
+data:
+  onprem-zabbix-server.yaml: |
+    zabbix_export:
+      version: '7.4'
+      template_groups:
+        - uuid: 7df96b18c230490a9a0a9e2307226338
+          name: Templates
+      templates:
+        - uuid: 8a084206d4774907aba716301914991f
+          template: 'Zabbix Server Health Metrics'
+          name: 'Zabbix Server Health Metrics'
+          description: 'Remote health monitoring template for the on-premises Zabbix server.'
+          groups:
+            - name: Templates
+          items:
+            - uuid: 487627a2d377419c93bf6eb68beb55b7
+              name: 'Agent ping'
+              type: ZABBIX_ACTIVE
+              key: agent.ping
+            - uuid: 381d7b6de05c4f1eb0c1ff56349844a7
+              name: 'Port 10051 listening'
+              type: ZABBIX_ACTIVE
+              key: 'net.tcp.listen[10051]'
+            - uuid: 46b0916dd5b94025b4e0984d4a6c3d07
+              name: 'Zabbix server process count'
+              type: ZABBIX_ACTIVE
+              key: 'proc.num[zabbix_server]'
+            - uuid: d24dff017f9b45ffb2c8692d36076d4c
+              name: 'zabbix-server service state'
+              type: ZABBIX_ACTIVE
+              key: 'systemd.unit.info[zabbix-server.service,ActiveState]'
+              value_type: TEXT
+            - uuid: ee172450b92c4cbaa49e51384c53bc40
+              name: 'Zabbix server internal stats'
+              type: ZABBIX_ACTIVE
+              key: 'zabbix.stats[127.0.0.1,10051]'
+              history: 1h
+              value_type: TEXT
+            - uuid: 69e1685071f846b6bf6cea6dac55eb51
+              name: 'Unsupported items count'
+              type: DEPENDENT
+              key: zabbix.items_unsupported
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.items_unsupported
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
+            - uuid: e65723d28a3442cbbf7ac3a7c527d577
+              name: 'Preprocessing queue depth'
+              type: DEPENDENT
+              key: zabbix.preprocessing.queue
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.preprocessing.queue
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
+            - uuid: dcfb4512f727454e990fb0f8e2c46a0a
+              name: 'History syncer busy'
+              type: DEPENDENT
+              key: zabbix.process.history_syncer.busy
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.data.process[''history syncer''].busy.avg'
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
+            - uuid: 5182a31b76454cc388dbe6a9c3459d10
+              name: 'Configuration cache, % used'
+              type: DEPENDENT
+              key: zabbix.rcache.pused
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.rcache.pused
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
+            - uuid: d8297fca6d5042d29764835dbc9d9b7c
+              name: 'Items delayed >1 min'
+              type: ZABBIX_ACTIVE
+              key: 'zabbix.stats[127.0.0.1,10051,queue,1m]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.queue
+            - uuid: 33f9079161c246568a8d05560b7d4f93
+              name: 'Items delayed > 10 min'
+              type: ZABBIX_ACTIVE
+              key: 'zabbix.stats[127.0.0.1,10051,queue,10m]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.queue
+            - uuid: eef9c3392aa347e692aab6d01aaa2086
+              name: 'Value cache buffer, % used'
+              type: DEPENDENT
+              key: zabbix.vcache.buffer.pused
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.vcache.buffer.pused
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
+            - uuid: 2e1c02308cb24078ba43d95de767d1ad
+              name: 'Value cache operating mode'
+              type: DEPENDENT
+              key: zabbix.vcache.cache.mode
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.vcache.cache.mode
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
+            - uuid: 5b90093901034c8091a170ece1775816
+              name: 'Write cache history, % used'
+              type: DEPENDENT
+              key: zabbix.wcache.history.pused
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.wcache.history.pused
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
+            - uuid: ebd4a9238286490fb8ade90c4d5ad320
+              name: 'Write cache index, % used'
+              type: DEPENDENT
+              key: zabbix.wcache.index.pused
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.wcache.index.pused
+              master_item:
+                key: 'zabbix.stats[127.0.0.1,10051]'
