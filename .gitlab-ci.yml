@@ -9,8 +9,8 @@ include:
     ZABBIX_IMAGE_TAG: "ubuntu-7.4.8"
     ZABBIX_SERVER_DEBUGLEVEL: "5"
     STORAGE_CLASS: "gp3-wait-retain-xfs-encrypted"
-    SAML_SP_CRT_B64: ""
-    SAML_SP_KEY_B64: ""
+    SAML_SP_CRT_B64:
+    SAML_SP_KEY_B64:
     ONPREM_ZABBIX_HOST: "nlmgmt032.bethel.jw.org"
 
 deploy-acceptance:
@@ -23,12 +23,13 @@ deploy-acceptance:
     HOST_NAME: zabbix-jr-${CI_MERGE_REQUEST_IID}.o11n-acceptance.jw-cd-cicd-01.10aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-acceptance
     STORAGE_CLASS: "gp3-wait-delete-xfs-encrypted"
+    CUSTOM_VAULT_PATHS: kv2/data/appsvc/azure-ad/apps/jw-cd-azure/${CI_PROJECT_PATH}-union
 
 delete-acceptance:
   variables:
     AWS: jw-cd-cicd-01
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-acceptance
-    CUSTOM_VAULT_PATHS: kv2/appsvc/azure-ad/apps/jw-cd-azure/zabbix/zabbix_jr-acceptance
+    CUSTOM_VAULT_PATHS: kv2/data/appsvc/azure-ad/apps/jw-cd-azure/${CI_PROJECT_PATH}-union
 
 deploy-union:
   variables:
@@ -36,7 +37,7 @@ deploy-union:
     CI_ENVIRONMENT_SLUG: union
     HOST_NAME: zabbix-jr.o11n-union.jw-cd-orchestration-prd.10aws.org
     KUBECFG_VAULT_PATH: secret/systems/eks/o11n-eks-o11n-union
-    CUSTOM_VAULT_PATHS: kv2/appsvc/azure-ad/apps/jw-cd-azure/zabbix/zabbix_jr-union
+    CUSTOM_VAULT_PATHS: kv2/data/appsvc/azure-ad/apps/jw-cd-azure/${CI_PROJECT_PATH}-union
 
 deploy-deliver:
   variables:
